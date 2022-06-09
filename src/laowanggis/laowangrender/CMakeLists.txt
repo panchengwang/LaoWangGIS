@@ -26,10 +26,12 @@ include_directories(
 
 set(PROJECT_SOURCES
     LWMapRender.cpp
+    LWGeometryAffineOperation.cpp
 )
 
 set(PROJECT_HEADERS
     LWMapRender.h
+    LWGeometryAffineOperation.h
 )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})

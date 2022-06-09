@@ -4,6 +4,7 @@
 #include <string>
 #include <cairo/cairo.h>
 #include <geos/geom.h>
+#include "LWGeometryAffineOperation.h"
 
 using namespace geos::geom;
 
@@ -34,16 +35,12 @@ public:
     void recalculateExtent();
 
     void addGeometry(Geometry *g);
-    void addPoint(Point *pt);
-    void addLineString(LineString *ls);
-    void addPolygon(Polygon *pg);
-    void addCollection(GeometryCollection *cl);
+    void addPoint(Point* pt);
+    void addLineString(LineString* g);
+    void addPolygon(Polygon* g);
+    void addCollection(GeometryCollection* g);
 
-    Geometry* affine(Geometry *g);
-    Point* affine(Point* pt);
-    LineString* affine(LineString* ls);
-    Polygon *affine(Polygon* pg);
-    GeometryCollection *affine(GeometryCollection* cl);
+    std::unique_ptr<Geometry> affine(Geometry *g);
 
 private:
     void init();
@@ -59,6 +56,10 @@ protected:
     cairo_surface_t *_surface;
     cairo_t *_cairo;
     double _scale;
+    LWGeometryAffineOperation _affineOperation;
+    util::GeometryEditor _editor;
+
+
 };
 
 #endif // LWMAPRENDER_H

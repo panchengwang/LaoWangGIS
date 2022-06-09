@@ -26,8 +26,6 @@ LWMapRender::LWMapRender(double width,
     _widthOfPoint = _pointPerMilliMeter * _width;
     _heightOfPoint = _pointPerMilliMeter * _height;
 
-
-    recalculateExtent();
 }
 
 
@@ -48,6 +46,7 @@ LWMapRender::~LWMapRender()
  */
 void LWMapRender::begin()
 {
+    recalculateExtent();
     if(_renderEngine == RenderEngine::Image){
         _surface = cairo_image_surface_create(
                     CAIRO_FORMAT_ARGB32,
@@ -55,6 +54,8 @@ void LWMapRender::begin()
                     _heightOfPoint
                     );
     }
+
+    _cairo = cairo_create(_surface);
 }
 
 
@@ -125,76 +126,102 @@ void LWMapRender::recalculateExtent()
     _maxX = _centerX + _widthOfPoint * 0.5 / _scale;
     _minY = _centerY - _heightOfPoint * 0.5 / _scale;
     _maxY = _centerY + _heightOfPoint * 0.5 / _scale;
+
+    double a = _scale;
+    double b = 0.0;
+    double xoff = _widthOfPoint * 0.5 - _centerX * _scale;
+    double d = 0.0;
+    double e = - _scale;
+    double yoff = _heightOfPoint * 0.5 + _centerY * _scale;
+    _affineOperation.setAffineMatrix(a,b,xoff,
+                                     d,e,yoff);
 }
+
 
 void LWMapRender::addGeometry(Geometry *g)
 {
-    switch(g->getGeometryTypeId()){
-    case geos::geom::GEOS_POINT:
-        addPoint((Point*)g);
-        break;
-    case geos::geom::GEOS_LINESTRING:
-        addLineString((LineString*)g);
-        break;
-    case geos::geom::GEOS_POLYGON:
-        addPolygon((Polygon*)g);
-        break;
-    default:
-        addCollection((GeometryCollection*)g);
-        break;
+    std::unique_ptr<Geometry> geo2 = _editor.edit(g, &_affineOperation);
+    Geometry* g2 = geo2.get();
+    Point* pt = dynamic_cast<Point*>(g2);
+    if( pt ){
+        addPoint(pt);
+        return;
     }
+
+    LineString* ls = dynamic_cast<LineString*>(g2);
+    if(ls){
+        addLineString(ls);
+        return;
+    }
+
+    Polygon* pg = dynamic_cast<Polygon*>(g2);
+    if(pg){
+        addPolygon(pg);
+        return;
+    }
+
+    GeometryCollection* collection = dynamic_cast<GeometryCollection*>(g2);
+    if(collection){
+        addCollection(collection);
+        return;
+    }
+
 }
 
-void LWMapRender::addPoint(Point *pt)
+void LWMapRender::addPoint(Point* g)
 {
     double x,y;
-    x=pt->getX();
-    y=pt->getY();
+
+    x=g->getX();
+    y=g->getY();
+
+    cairo_set_source_rgba(_cairo,1.0,1.0,0.0,0.50);
+    cairo_arc(_cairo,x,y,5,0,2*M_PI);
+    cairo_fill(_cairo);
+    cairo_set_source_rgba(_cairo,1.0,0.0,0.0,0.5);
+    cairo_arc(_cairo,x,y,5,0,2*M_PI);
+    cairo_stroke(_cairo);
 
 }
 
-void LWMapRender::addLineString(LineString *ls)
+void LWMapRender::addLineString(LineString* g)
+{
+    const CoordinateSequence *seq = g->getCoordinatesRO();
+    const Coordinate& coord = seq->getAt(0);
+    cairo_set_source_rgba(_cairo, 0.0,0.0,0.0,0.5);
+    cairo_move_to(_cairo,coord.x,coord.y);
+    for(int i=1; i<seq->size(); i++){
+        const Coordinate& coord = seq->getAt(i);
+        cairo_move_to(_cairo,coord.x, coord.y);
+    }
+    cairo_stroke(_cairo);
+}
+
+void LWMapRender::addPolygon(Polygon* g)
+{
+    std::unique_ptr<CoordinateSequence> myseq = g->getCoordinates();
+    const CoordinateSequence *seq = myseq.get();
+    const Coordinate& coord = seq->getAt(0);
+    cairo_set_source_rgba(_cairo, 0.0,0.0,0.0,0.5);
+    cairo_move_to(_cairo,coord.x,coord.y);
+    for(int i=1; i<seq->size(); i++){
+        const Coordinate& coord = seq->getAt(i);
+        cairo_move_to(_cairo,coord.x, coord.y);
+    }
+    cairo_fill(_cairo);
+}
+
+void LWMapRender::addCollection(GeometryCollection* g)
 {
 
 }
 
-void LWMapRender::addPolygon(Polygon *pg)
-{
 
+std::unique_ptr<Geometry> LWMapRender::affine(Geometry *g)
+{
+    return _editor.edit(g, &_affineOperation);
 }
 
-void LWMapRender::addCollection(GeometryCollection *cl)
-{
-
-}
-
-
-Geometry *LWMapRender::affine(Geometry *g)
-{
-
-}
-
-
-
-Point *LWMapRender::affine(Point *pt)
-{
-
-}
-
-LineString *LWMapRender::affine(LineString *ls)
-{
-
-}
-
-Polygon *LWMapRender::affine(Polygon *pg)
-{
-
-}
-
-GeometryCollection *LWMapRender::affine(GeometryCollection *cl)
-{
-
-}
 
 
 void LWMapRender::init()
