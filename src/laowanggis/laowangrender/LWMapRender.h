@@ -34,13 +34,16 @@ public:
     char *save(int& size);
     void recalculateExtent();
 
-    void addGeometry(Geometry *g);
-    void addPoint(Point* pt);
-    void addLineString(LineString* g);
-    void addPolygon(Polygon* g);
-    void addCollection(GeometryCollection* g);
+    void addGeometry( Geometry *g);
+    Geometry* affine(Geometry *g);
 
-    std::unique_ptr<Geometry> affine(Geometry *g);
+protected:
+    void addPoint( Point* pt);
+    void addLineString( LineString* g);
+    void addPolygon( Polygon* g);
+    void addCollection( GeometryCollection* g);
+    void addGeometryInternal(Geometry *g);
+
 
 private:
     void init();

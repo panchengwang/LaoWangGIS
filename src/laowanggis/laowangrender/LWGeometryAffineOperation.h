@@ -9,12 +9,15 @@ class LWGeometryAffineOperation : public geos::geom::util::CoordinateOperation
 public:
     LWGeometryAffineOperation();
     void setAffineMatrix(double a, double b, double xoff, double d, double e, double yoff);
+
     std::unique_ptr<CoordinateSequence> edit(
         const CoordinateSequence * 	coordinates,
         const Geometry* geometry
-    );
+            );
+    std::unique_ptr<Geometry> edit(const Geometry *geometry, const GeometryFactory *factory);
 protected:
     double _a, _b, _d, _e, _xoff, _yoff;
+
 };
 
 #endif // LWGEOMETRYAFFINEOPERATION_H

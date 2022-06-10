@@ -1,6 +1,7 @@
 #include "LWMapRender.h"
 #include <iostream>
 #include <QtCore>
+#include <geos/io.h>
 
 using namespace geos::geom;
 
@@ -140,31 +141,9 @@ void LWMapRender::recalculateExtent()
 
 void LWMapRender::addGeometry(Geometry *g)
 {
-    std::unique_ptr<Geometry> geo2 = _editor.edit(g, &_affineOperation);
-    Geometry* g2 = geo2.get();
-    Point* pt = dynamic_cast<Point*>(g2);
-    if( pt ){
-        addPoint(pt);
-        return;
-    }
+    Geometry *g2 = affine(g);
 
-    LineString* ls = dynamic_cast<LineString*>(g2);
-    if(ls){
-        addLineString(ls);
-        return;
-    }
-
-    Polygon* pg = dynamic_cast<Polygon*>(g2);
-    if(pg){
-        addPolygon(pg);
-        return;
-    }
-
-    GeometryCollection* collection = dynamic_cast<GeometryCollection*>(g2);
-    if(collection){
-        addCollection(collection);
-        return;
-    }
+    addGeometryInternal(g2);
 
 }
 
@@ -213,13 +192,52 @@ void LWMapRender::addPolygon(Polygon* g)
 
 void LWMapRender::addCollection(GeometryCollection* g)
 {
+    qInfo() << g->getNumGeometries();
+    for(int i=0; i<g->getNumGeometries(); i++){
+        const Geometry* part = g->getGeometryN(i);
+        if(!part){
+            std::cout << "safdsafasf" << std::endl;
+        }
+        geos::io::WKTWriter writer;
+        std::cout << writer.write(part) << std::endl;
 
+//        std::unique_ptr<Geometry> geo = g->getGeometryN(i)->clone();
+//        addPolygon((Polygon*)geo.get());
+    }
+}
+
+void LWMapRender::addGeometryInternal(Geometry *g)
+{
+    Geometry* g2 = g;
+    Point* pt = dynamic_cast<Point*>(g2);
+    if( pt ){
+        addPoint(pt);
+        return;
+    }
+
+    LineString* ls = dynamic_cast<LineString*>(g2);
+    if(ls){
+        addLineString(ls);
+        return;
+    }
+
+    Polygon* pg = dynamic_cast<Polygon*>(g2);
+    if(pg){
+        addPolygon(pg);
+        return;
+    }
+
+    GeometryCollection* collection = dynamic_cast<GeometryCollection*>(g2);
+    if(collection){
+        addCollection(collection);
+        return;
+    }
 }
 
 
-std::unique_ptr<Geometry> LWMapRender::affine(Geometry *g)
+Geometry* LWMapRender::affine(Geometry *g)
 {
-    return _editor.edit(g, &_affineOperation);
+    return _editor.edit(g, &_affineOperation).release();
 }
 
 

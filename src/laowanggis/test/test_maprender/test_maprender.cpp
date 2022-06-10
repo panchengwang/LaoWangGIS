@@ -36,8 +36,9 @@ int main(int argc, char** argv){
         QSqlQuery query(QString("select geo from %1").arg(layers[i]), db);
         while(query.next()){
             std::istringstream is(query.value(0).toString().toStdString());
-            std::unique_ptr<Geometry> geo = reader.readHEX(is);
-            render.addGeometry(geo.get());
+            Geometry* geo = reader.readHEX(is).release();
+            render.addGeometry(geo);
+            delete geo;
         }
     }
 
