@@ -26,15 +26,15 @@ include_directories(
 
 set(PROJECT_SOURCES
     LWMapRender.cpp
-    LWGeometryAffineOperation.cpp
+    LWAffineOperator.cpp
 )
 
 set(PROJECT_HEADERS
     LWMapRender.h
-    LWGeometryAffineOperation.h
+    LWAffineOperator.h
 )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Cairo)
-target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Geos -lgeos)
+#target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Geos -lgeos)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)

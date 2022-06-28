@@ -1,9 +1,11 @@
 #include "LWMapRender.h"
 #include <iostream>
 #include <QtCore>
-#include <geos/io.h>
+#include <ogrsf_frmts.h>
 
-using namespace geos::geom;
+
+
+
 
 LWMapRender::LWMapRender(double width,
                          double height,
@@ -24,8 +26,8 @@ LWMapRender::LWMapRender(double width,
         _pointPerMilliMeter = 72.0/25.4;
     }
 
-    _widthOfPoint = _pointPerMilliMeter * _width;
-    _heightOfPoint = _pointPerMilliMeter * _height;
+    _pointWidth = _pointPerMilliMeter * _width;
+    _pointHeight = _pointPerMilliMeter * _height;
 
 }
 
@@ -33,7 +35,14 @@ LWMapRender::LWMapRender(double width,
 
 LWMapRender::~LWMapRender()
 {
-    end();
+    if (!_cairo){
+        cairo_destroy(_cairo);
+        _cairo= NULL;
+    }
+    if (!_surface){
+        cairo_surface_destroy(_surface);
+        _surface = NULL;
+    }
 }
 
 /**
@@ -51,8 +60,8 @@ void LWMapRender::begin()
     if(_renderEngine == RenderEngine::Image){
         _surface = cairo_image_surface_create(
                     CAIRO_FORMAT_ARGB32,
-                    _widthOfPoint,
-                    _heightOfPoint
+                    _pointWidth,
+                    _pointHeight
                     );
     }
 
@@ -63,14 +72,7 @@ void LWMapRender::begin()
 
 void LWMapRender::end()
 {
-    if (!_cairo){
-        cairo_destroy(_cairo);
-        _cairo= NULL;
-    }
-    if (!_surface){
-        cairo_surface_destroy(_surface);
-        _surface = NULL;
-    }
+    cairo_surface_finish(_surface);
 }
 
 
@@ -120,34 +122,34 @@ void LWMapRender::recalculateExtent()
     double xscale, yscale;
     _centerX = (_minX + _maxX) * 0.5;
     _centerY = (_minY + _maxY) * 0.5;
-    xscale = _widthOfPoint / (_maxX - _minX);
-    yscale = _heightOfPoint / (_maxY - _minY);
+    xscale = _pointWidth / (_maxX - _minX);
+    yscale = _pointHeight / (_maxY - _minY);
     _scale = xscale < yscale ? xscale : yscale;
-    _minX = _centerX - _widthOfPoint * 0.5 / _scale;
-    _maxX = _centerX + _widthOfPoint * 0.5 / _scale;
-    _minY = _centerY - _heightOfPoint * 0.5 / _scale;
-    _maxY = _centerY + _heightOfPoint * 0.5 / _scale;
+    _minX = _centerX - _pointWidth * 0.5 / _scale;
+    _maxX = _centerX + _pointWidth * 0.5 / _scale;
+    _minY = _centerY - _pointHeight * 0.5 / _scale;
+    _maxY = _centerY + _pointHeight * 0.5 / _scale;
 
     double a = _scale;
     double b = 0.0;
-    double xoff = _widthOfPoint * 0.5 - _centerX * _scale;
+    double xoff = _pointWidth * 0.5 - _centerX * _scale;
     double d = 0.0;
     double e = - _scale;
-    double yoff = _heightOfPoint * 0.5 + _centerY * _scale;
-    _affineOperation.setAffineMatrix(a,b,xoff,
-                                     d,e,yoff);
+    double yoff = _pointHeight * 0.5 + _centerY * _scale;
+    _affineOperation.setMatrix(a,b,xoff,
+                               d,e,yoff);
 }
 
 
-void LWMapRender::addGeometry(Geometry *g)
+void LWMapRender::addGeometry(OGRGeometry *g)
 {
-    Geometry *g2 = affine(g);
-
+    OGRGeometry *g2 = affine(g);
+//    std::cout << g2->exportToWkt() << std::endl;
     addGeometryInternal(g2);
-
+    OGRGeometryFactory::destroyGeometry(g2);
 }
 
-void LWMapRender::addPoint(Point* g)
+void LWMapRender::addPoint(OGRPoint* g)
 {
     double x,y;
 
@@ -159,85 +161,106 @@ void LWMapRender::addPoint(Point* g)
     cairo_fill(_cairo);
     cairo_set_source_rgba(_cairo,1.0,0.0,0.0,0.5);
     cairo_arc(_cairo,x,y,5,0,2*M_PI);
+    cairo_set_line_width (_cairo, 1.0);
     cairo_stroke(_cairo);
 
 }
 
-void LWMapRender::addLineString(LineString* g)
+void LWMapRender::addLineString(OGRLineString* g)
 {
-    const CoordinateSequence *seq = g->getCoordinatesRO();
-    const Coordinate& coord = seq->getAt(0);
-    cairo_set_source_rgba(_cairo, 0.0,0.0,0.0,0.5);
-    cairo_move_to(_cairo,coord.x,coord.y);
-    for(int i=1; i<seq->size(); i++){
-        const Coordinate& coord = seq->getAt(i);
-        cairo_move_to(_cairo,coord.x, coord.y);
+    int npoints = g->getNumPoints();
+    OGRPoint pt;
+
+    cairo_set_source_rgba(_cairo, 0.0,0.0,0.0,1);
+    g->getPoint(0,&pt);
+    cairo_move_to(_cairo,pt.getX(), pt.getY());
+    for(int i=1; i<npoints; i++){
+        g->getPoint(i,&pt);
+        cairo_line_to(_cairo,pt.getX(), pt.getY());
     }
+    cairo_set_line_width (_cairo, 1.0);
     cairo_stroke(_cairo);
 }
 
-void LWMapRender::addPolygon(Polygon* g)
+void LWMapRender::addPolygon(OGRPolygon* g)
 {
-    std::unique_ptr<CoordinateSequence> myseq = g->getCoordinates();
-    const CoordinateSequence *seq = myseq.get();
-    const Coordinate& coord = seq->getAt(0);
-    cairo_set_source_rgba(_cairo, 0.0,0.0,0.0,0.5);
-    cairo_move_to(_cairo,coord.x,coord.y);
-    for(int i=1; i<seq->size(); i++){
-        const Coordinate& coord = seq->getAt(i);
-        cairo_move_to(_cairo,coord.x, coord.y);
+    int count = g->getExteriorRing()->getNumPoints();
+    for(int i=0; i<g->getNumInteriorRings(); i++){
+        count += g->getInteriorRing(i)->getNumPoints();
+    }
+    double *x = new double[count];
+    double *y = new double[count];
+    int k=0;
+
+    OGRLinearRing *ring = g->getExteriorRing();
+    for(int i=0; i<ring->getNumPoints(); i++){
+        OGRPoint pt;
+        ring->getPoint(i,&pt);
+        x[k] = pt.getX();
+        y[k] = pt.getY();
+        k ++;
+    }
+    for(int i=0; i<g->getNumInteriorRings(); i++){
+        ring = g->getInteriorRing(i);
+        for (int j=0; j<ring->getNumPoints(); j++){
+            OGRPoint pt;
+            ring->getPoint(j,&pt);
+            x[k] = pt.getX();
+            y[k] = pt.getY();
+            k++;
+        }
+    }
+
+    cairo_set_source_rgba(_cairo,0.5,0.5,0.5,0.5);
+    cairo_move_to(_cairo,x[0],y[0]);
+    for(int i=1; i<count; i++){
+        cairo_line_to(_cairo,x[i],y[i]);
     }
     cairo_fill(_cairo);
+
+
+    addLineString(g->getExteriorRing());
+    for(int i=0; i<g->getNumInteriorRings(); i++){
+        addLineString(g->getInteriorRing(i));
+    }
 }
 
-void LWMapRender::addCollection(GeometryCollection* g)
+void LWMapRender::addCollection(OGRGeometryCollection* g)
 {
-    qInfo() << g->getNumGeometries();
     for(int i=0; i<g->getNumGeometries(); i++){
-        const Geometry* part = g->getGeometryN(i);
-        if(!part){
-            std::cout << "safdsafasf" << std::endl;
-        }
-        geos::io::WKTWriter writer;
-        std::cout << writer.write(part) << std::endl;
-
-//        std::unique_ptr<Geometry> geo = g->getGeometryN(i)->clone();
-//        addPolygon((Polygon*)geo.get());
+        OGRGeometry *mygeo = g->getGeometryRef(i);
+        addGeometryInternal(mygeo);
     }
 }
 
-void LWMapRender::addGeometryInternal(Geometry *g)
+void LWMapRender::addGeometryInternal(OGRGeometry *g)
 {
-    Geometry* g2 = g;
-    Point* pt = dynamic_cast<Point*>(g2);
-    if( pt ){
-        addPoint(pt);
-        return;
-    }
-
-    LineString* ls = dynamic_cast<LineString*>(g2);
-    if(ls){
-        addLineString(ls);
-        return;
-    }
-
-    Polygon* pg = dynamic_cast<Polygon*>(g2);
-    if(pg){
-        addPolygon(pg);
-        return;
-    }
-
-    GeometryCollection* collection = dynamic_cast<GeometryCollection*>(g2);
-    if(collection){
-        addCollection(collection);
-        return;
+    OGRwkbGeometryType type = g->getGeometryType();
+    switch(type){
+    case OGRwkbGeometryType::wkbPoint:
+        addPoint((OGRPoint*)g);
+        break;
+    case OGRwkbGeometryType::wkbLineString:
+        addLineString((OGRLineString*)g);
+        break;
+    case OGRwkbGeometryType::wkbPolygon:
+        addPolygon((OGRPolygon*)g);
+        break;
+    case OGRwkbGeometryType::wkbMultiPoint:
+    case OGRwkbGeometryType::wkbMultiLineString:
+    case OGRwkbGeometryType::wkbMultiPolygon:
+    case OGRwkbGeometryType::wkbGeometryCollection:
+        addCollection((OGRGeometryCollection*)g);
+        break;
+    default:
+        break;
     }
 }
 
 
-Geometry* LWMapRender::affine(Geometry *g)
+OGRGeometry* LWMapRender::affine(OGRGeometry *g)
 {
-    return _editor.edit(g, &_affineOperation).release();
+    return _affineOperation.affine(g);
 }
 
 

@@ -3,10 +3,10 @@
 
 #include <string>
 #include <cairo/cairo.h>
-#include <geos/geom.h>
-#include "LWGeometryAffineOperation.h"
+#include <ogrsf_frmts.h>
+#include "LWAffineOperator.h"
 
-using namespace geos::geom;
+
 
 class LWMapRender
 {
@@ -34,15 +34,15 @@ public:
     char *save(int& size);
     void recalculateExtent();
 
-    void addGeometry( Geometry *g);
-    Geometry* affine(Geometry *g);
+    void addGeometry( OGRGeometry *g);
+    OGRGeometry* affine(OGRGeometry *g);
 
 protected:
-    void addPoint( Point* pt);
-    void addLineString( LineString* g);
-    void addPolygon( Polygon* g);
-    void addCollection( GeometryCollection* g);
-    void addGeometryInternal(Geometry *g);
+    void addPoint( OGRPoint* pt);
+    void addLineString( OGRLineString* g);
+    void addPolygon( OGRPolygon* g);
+    void addCollection( OGRGeometryCollection* g);
+    void addGeometryInternal(OGRGeometry *g);
 
 
 private:
@@ -52,15 +52,15 @@ protected:
     double _width, _height;
     double _minX, _minY, _maxX, _maxY;
     double _centerX, _centerY;
-    double _widthOfPoint, _heightOfPoint;               // for image surface
+    double _pointWidth, _pointHeight;               // for image surface
     double _pointPerMilliMeter;
     const std::string _fileName;
     RenderEngine _renderEngine;
     cairo_surface_t *_surface;
     cairo_t *_cairo;
     double _scale;
-    LWGeometryAffineOperation _affineOperation;
-    util::GeometryEditor _editor;
+    LWAffineOperator _affineOperation;
+
 
 
 };

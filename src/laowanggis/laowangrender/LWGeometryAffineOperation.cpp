@@ -1,6 +1,7 @@
 #include "LWGeometryAffineOperation.h"
 #include <memory.h>
 #include <geos/geom.h>
+#include <QtCore>
 
 LWGeometryAffineOperation::LWGeometryAffineOperation()
 {
@@ -27,15 +28,21 @@ std::unique_ptr<Geometry>
 LWGeometryAffineOperation::edit(const Geometry* geometry,
                           const GeometryFactory* factory)
 {
-    if (geometry == nullptr) {
-        return nullptr;
-    }
+    std::unique_ptr<Geometry> ret = nullptr;
+//    ret = CoordinateOperation::edit(geometry,factory);
 
-    if(const LinearRing* ring = dynamic_cast<const LinearRing*>(geometry)) {
-        const CoordinateSequence* coords = ring->getCoordinatesRO();
-        auto newCoords = edit(coords, geometry);
-        // LinearRing instance takes over ownership of newCoords instance
-        return factory->createLinearRing(std::move(newCoords));
+//    if (ret == nullptr) {
+//        return nullptr;
+//    }
+    if(geometry->isEmpty()){
+        qInfo() << "empty";
+    }
+    if(const Polygon* pg = dynamic_cast<const Polygon*>(geometry)) {
+        qInfo() << ((Polygon*)geometry)->getArea();
+        std::unique_ptr<LinearRing>  shell = pg->getExteriorRing()->clone();
+        shell.reset((LinearRing*)edit(shell.get(),factory).release());
+        ret = factory->createPolygon(std::move(shell));
+        return ret;
     }
     if(const LineString* line = dynamic_cast<const LineString*>(geometry)) {
         const CoordinateSequence* coords = line->getCoordinatesRO();
@@ -56,18 +63,18 @@ std::unique_ptr<CoordinateSequence> LWGeometryAffineOperation::edit(
         const CoordinateSequence *coordinates,
         const Geometry *geometry)
 {
+    std::unique_ptr<CoordinateSequence> mycoords = coordinates->clone();
 
-    CoordinateSequence *coords = (CoordinateSequence*)coordinates;
     Coordinate coord(0.0,0.0);
     double x,y;
-    for(std::size_t i = 0; i < coords->size(); i++){
-        coord = coords->getAt(i);
+    for(std::size_t i = 0; i < mycoords->size(); i++){
+        coord = mycoords->getAt(i);
         x = coord.x;
         y = coord.y;
         coord.x = _a * x + _b * y + _xoff;
         coord.y = _d * x + _e * y + _yoff;
-        coords->setAt(coord,i);
+        mycoords->setAt(coord,i);
     }
 
-    return CoordinateArraySequenceFactory::instance()->create(*coordinates);
+    return mycoords;
 }
