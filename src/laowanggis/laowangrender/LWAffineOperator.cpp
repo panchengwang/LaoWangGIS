@@ -7,6 +7,9 @@ LWAffineOperator::LWAffineOperator()
 
 }
 
+
+
+
 void LWAffineOperator::setMatrix(double a, double b, double xoff, double d, double e, double yoff)
 {
     _a = a;
@@ -16,6 +19,9 @@ void LWAffineOperator::setMatrix(double a, double b, double xoff, double d, doub
     _e = e;
     _yoff = yoff;
 }
+
+
+
 
 OGRGeometry *LWAffineOperator::affine(OGRGeometry *geo)
 {
@@ -46,6 +52,8 @@ OGRGeometry *LWAffineOperator::affine(OGRGeometry *geo)
     return g;
 }
 
+
+
 OGRPoint *LWAffineOperator::affine(OGRPoint *pt)
 {
     OGRPoint *mypt = pt->clone();
@@ -57,6 +65,8 @@ OGRPoint *LWAffineOperator::affine(OGRPoint *pt)
 
     return mypt;
 }
+
+
 
 OGRLineString *LWAffineOperator::affine(OGRLineString *ls)
 {
@@ -88,6 +98,8 @@ OGRPolygon *LWAffineOperator::affine(OGRPolygon *pg)
     return mypg;
 }
 
+
+
 OGRGeometryCollection *LWAffineOperator::affine(OGRGeometryCollection *coll)
 {
     OGRGeometryCollection *mycoll =(OGRGeometryCollection*) OGRGeometryFactory::createGeometry(OGRwkbGeometryType::wkbGeometryCollection);
@@ -99,6 +111,7 @@ OGRGeometryCollection *LWAffineOperator::affine(OGRGeometryCollection *coll)
     }
     return mycoll;
 }
+
 
 void LWAffineOperator::affine(OGRRawPoint *pt)
 {
