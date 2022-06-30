@@ -7,7 +7,7 @@ MapControl::MapControl(QQuickItem *parent)
     // QQuickItem to create a visual item, you will need to uncomment the
     // following line and re-implement updatePaintNode()
 
-     setFlag(ItemHasContents, true);
+    //     setFlag(ItemHasContents, true);
 }
 
 

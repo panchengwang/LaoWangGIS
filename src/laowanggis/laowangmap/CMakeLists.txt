@@ -11,12 +11,16 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+list(APPEND LAOWANG_QML_IMPORT_PATH ${PROJECT_BINARY_DIR}/../laowangqml)
+set(QML2_IMPORT_PATH "${LAOWANG_QML_IMPORT_PATH}" CACHE STRING "Laowang qml import paths")
+message(WARNING ${PROJECT_BINARY_DIR})
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick)
 
 set(PROJECT_SOURCES
         main.cpp
         qml.qrc
+        laowangmap.sh
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -59,3 +63,11 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_import_qml_plugins(laowangmap)
     qt_finalize_executable(laowangmap)
 endif()
+
+
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/laowangmap.sh ${PROJECT_BINARY_DIR}/
+)
+

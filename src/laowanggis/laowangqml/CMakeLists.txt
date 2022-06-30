@@ -16,19 +16,23 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick QuickControls2
 
 
 set(PROJECT_SOURCES
-    laowangqml_plugin.cpp
-    MapControl.cpp
+    src/laowangqml_plugin.cpp
+    src/MapControl.cpp
 )
 
 set(PROJECT_HEADERS
-    laowangqml_plugin.h
-    MapControl.h
+    src/laowangqml_plugin.h
+    src/MapControl.h
+)
+
+set(PROJECT_OTHERS
+    qmldir
 )
 
 
 add_library(${PROJECT_NAME}
     SHARED
-    ${PROJECT_SOURCES} ${PROJECT_HEADERS}
+    ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_OTHERS}
 )
 
 
@@ -39,3 +43,14 @@ target_link_libraries(${PROJECT_NAME}
         Qt${QT_VERSION_MAJOR}::QuickControls2
         Qt${QT_VERSION_MAJOR}::Qml
 )
+
+
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND mkdir -p ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND cp ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp ${PROJECT_SOURCE_DIR}/qmldir ${PROJECT_BINARY_DIR}/cn/pcgis/
+)
+
