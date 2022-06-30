@@ -1,2 +1,4 @@
 module cn.pcgis
 plugin laowangqml
+
+LWApplicationWindow 1.0 LWApplicationWindow.qml

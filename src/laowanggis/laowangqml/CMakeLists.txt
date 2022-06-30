@@ -25,15 +25,21 @@ set(PROJECT_HEADERS
     src/MapControl.h
 )
 
+
 set(PROJECT_OTHERS
     qmldir
 )
+
+
+FILE(GLOB QML_FILES "qml/*.qml")
+ADD_CUSTOM_TARGET(qml SOURCES ${QML_FILES})
 
 
 add_library(${PROJECT_NAME}
     SHARED
     ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_OTHERS}
 )
+
 
 
 target_link_libraries(${PROJECT_NAME}
@@ -45,12 +51,14 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 
+
 add_custom_command(
     TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
     COMMAND mkdir -p ${PROJECT_BINARY_DIR}/cn/pcgis
-    COMMAND cp ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
-    COMMAND cp ${PROJECT_SOURCE_DIR}/qmldir ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -f ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/qmldir ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/qml/*.qml ${PROJECT_BINARY_DIR}/cn/pcgis/
 )
 
