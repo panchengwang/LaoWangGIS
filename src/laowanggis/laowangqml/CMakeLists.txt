@@ -17,12 +17,12 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick QuickControls2
 
 set(PROJECT_SOURCES
     src/laowangqml_plugin.cpp
-    src/MapControl.cpp
+    src/LWMapControl.cpp
 )
 
 set(PROJECT_HEADERS
     src/laowangqml_plugin.h
-    src/MapControl.h
+    src/LWMapControl.h
 )
 
 

@@ -1,7 +1,7 @@
-#include "MapControl.h"
+#include "LWMapControl.h"
 #include <QPainter>
 
-MapControl::MapControl(QQuickItem *parent)
+LWMapControl::LWMapControl(QQuickItem *parent)
     : QQuickPaintedItem(parent)
 {
     // By default, QQuickItem does not draw anything. If you subclass
@@ -17,55 +17,55 @@ MapControl::MapControl(QQuickItem *parent)
 
 
 
-MapControl::~MapControl()
+LWMapControl::~LWMapControl()
 {
 }
 
-void MapControl::paint(QPainter *painter)
+void LWMapControl::paint(QPainter *painter)
 {
     QRect rect(0,0,width(),height());
     painter->fillRect(rect,_backgroundColor);
 }
 
-QColor MapControl::backgroundColor() const
+QColor LWMapControl::backgroundColor() const
 {
     return _backgroundColor;
 }
 
-void MapControl::setBackgroundColor(const QColor& color)
+void LWMapControl::setBackgroundColor(const QColor& color)
 {
     _backgroundColor = color;
     update();
     emit backgroundColorChanged();
 }
 
-void MapControl::keyPressEvent(QKeyEvent *event)
+void LWMapControl::keyPressEvent(QKeyEvent *event)
 {
     QQuickPaintedItem::keyPressEvent(event);
 }
 
-void MapControl::keyReleaseEvent(QKeyEvent *event)
+void LWMapControl::keyReleaseEvent(QKeyEvent *event)
 {
     QQuickPaintedItem::keyReleaseEvent(event);
 }
 
-void MapControl::mouseDoubleClickEvent(QMouseEvent *event)
+void LWMapControl::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QQuickPaintedItem::mouseDoubleClickEvent(event);
 }
 
-void MapControl::mouseMoveEvent(QMouseEvent *event)
+void LWMapControl::mouseMoveEvent(QMouseEvent *event)
 {
     QQuickPaintedItem::mouseMoveEvent(event);
 }
 
-void MapControl::mousePressEvent(QMouseEvent *event)
+void LWMapControl::mousePressEvent(QMouseEvent *event)
 {
     QQuickPaintedItem::mousePressEvent(event);
     qInfo() << event->pos();
 }
 
-void MapControl::mouseReleaseEvent(QMouseEvent *event)
+void LWMapControl::mouseReleaseEvent(QMouseEvent *event)
 {
     QQuickPaintedItem::mouseReleaseEvent(event);
 }

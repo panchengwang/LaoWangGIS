@@ -4,15 +4,15 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 
-class MapControl : public QQuickPaintedItem
+class LWMapControl : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_DISABLE_COPY(MapControl)
+    Q_DISABLE_COPY(LWMapControl)
 
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
 public:
-    explicit MapControl(QQuickItem *parent = nullptr);
-    ~MapControl() override;
+    explicit LWMapControl(QQuickItem *parent = nullptr);
+    ~LWMapControl() override;
 
     void paint(QPainter *painter);
 

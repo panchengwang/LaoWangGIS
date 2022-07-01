@@ -1,10 +1,10 @@
 #include "laowangqml_plugin.h"
-#include "MapControl.h"
+#include "LWMapControl.h"
 #include <qqml.h>
 
 void LaowangqmlPlugin::registerTypes(const char *uri)
 {
     // @uri cn.pcgis
-    qmlRegisterType<MapControl>(uri, 1, 0, "MapControl");
+    qmlRegisterType<LWMapControl>(uri, 1, 0, "LWMapControl");
 }
 
