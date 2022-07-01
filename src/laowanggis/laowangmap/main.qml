@@ -5,5 +5,9 @@ import cn.pcgis 1.0
 
 LWApplicationWindow {
     id: app
-
+    MapControl{
+        anchors.fill: parent
+        backgroundColor: "white"
+        focus: true
+    }
 }

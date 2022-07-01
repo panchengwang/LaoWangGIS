@@ -16,11 +16,7 @@ ApplicationWindow {
         console.log(screen.width)
     }
 
-    MapControl{
-        Component.onCompleted: {
-            console.log("mapcontrol init finished")
-        }
-    }
+
 
     function centerInScreen(){
         width = screen.width * 0.75
