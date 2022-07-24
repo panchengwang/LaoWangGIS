@@ -13,15 +13,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Cairo REQUIRED  IMPORTED_TARGET cairo)
-pkg_check_modules(Geos REQUIRED  IMPORTED_TARGET geos)
+#pkg_check_modules(Geos REQUIRED  IMPORTED_TARGET geos)
+find_package(GDAL CONFIG REQUIRED)
 
-
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick)
+#find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick)
 
 include_directories(
     ${Cairo_INCLUDE_DIRS}
-    ${Geos_INCLUDE_DIRS}
+    ${Gdal_INCLUDE_DIRS}
 )
 
 set(PROJECT_SOURCES
@@ -36,5 +37,6 @@ set(PROJECT_HEADERS
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Cairo)
+target_link_libraries(${PROJECT_NAME} PRIVATE GDAL::GDAL)
 #target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Geos -lgeos)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
