@@ -72,3 +72,4 @@ add_custom_command(
     COMMAND cp -f ${PROJECT_SOURCE_DIR}/laowangmap.sh ${PROJECT_BINARY_DIR}/
 )
 
+

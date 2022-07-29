@@ -4,16 +4,17 @@ import QtQuick.Controls 2.15
 import cn.pcgis 1.0
 
 ApplicationWindow {
-    id: app
-    width: 640
-    height: 480
+
+
+    width: 1440
+    height: 1080
+
     visible: true
-    title: qsTr("Welcome to use LaoWang Map! QQ: 593723812")
+    title: qsTr("Welcome to use LaoWang GIS! QQ: 593723812")
     color: "lightgray"
 
     Component.onCompleted: {
-        centerInScreen()
-        console.log(screen.width)
+//        centerInScreen()
     }
 
 
@@ -24,4 +25,6 @@ ApplicationWindow {
         x = (screen.width-width) * 0.5
         y = (screen.height-height)*0.5
     }
+
+
 }

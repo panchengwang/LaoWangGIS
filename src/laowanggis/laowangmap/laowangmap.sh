@@ -3,7 +3,7 @@
 OS=`uname`
 
 CUR_DIR=$(cd `dirname $0`; pwd)
-export QML2_IMPORT_PATH=${CUR_DIR}/../laowangqml
+export QML2_IMPORT_PATH=.:${CUR_DIR}/../laowangqml
 
 echo $OS
 if test "$OS"="Darwin" ; then

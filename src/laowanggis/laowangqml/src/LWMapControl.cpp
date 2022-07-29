@@ -39,6 +39,17 @@ void LWMapControl::setBackgroundColor(const QColor& color)
     emit backgroundColorChanged();
 }
 
+QJsonObject LWMapControl::configuration() const
+{
+    return _configuration ;
+}
+
+void LWMapControl::setConfiguration(const QJsonObject &configuration)
+{
+    _configuration = configuration;
+    emit configurationChanged();
+}
+
 void LWMapControl::keyPressEvent(QKeyEvent *event)
 {
     QQuickPaintedItem::keyPressEvent(event);

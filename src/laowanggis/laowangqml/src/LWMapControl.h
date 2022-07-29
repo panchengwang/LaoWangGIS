@@ -3,6 +3,7 @@
 
 #include <QQuickItem>
 #include <QQuickPaintedItem>
+#include <QtCore>
 
 class LWMapControl : public QQuickPaintedItem
 {
@@ -10,6 +11,8 @@ class LWMapControl : public QQuickPaintedItem
     Q_DISABLE_COPY(LWMapControl)
 
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
+    Q_PROPERTY(QJsonObject configuration READ configuration WRITE setConfiguration NOTIFY configurationChanged )
+
 public:
     explicit LWMapControl(QQuickItem *parent = nullptr);
     ~LWMapControl() override;
@@ -19,8 +22,11 @@ public:
     Q_INVOKABLE QColor backgroundColor() const;
     Q_INVOKABLE void setBackgroundColor(const QColor& color);
 
+    Q_INVOKABLE QJsonObject configuration() const;
+    Q_INVOKABLE void setConfiguration(const QJsonObject& configuration) ;
 signals:
     void backgroundColorChanged();
+    void configurationChanged();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -33,6 +39,7 @@ protected:
 protected:
     //    QSGNode *updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaintNodeData *updatePaintNodeData);
     QColor _backgroundColor;
+    QJsonObject _configuration;
 };
 
 #endif // LAOWANG_PLUGIN_H

@@ -16,32 +16,49 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
 
 
+
 set(PROJECT_SOURCES
     src/laowangqml_plugin.cpp
     src/LWMapControl.cpp
+    src/LWFile.cpp
 )
 
 set(PROJECT_HEADERS
     src/laowangqml_plugin.h
     src/LWMapControl.h
+    src/LWFile.h
 )
 
 
-set(PROJECT_OTHERS
-    qmldir
+#set(PROJECT_OTHERS
+#    cn/pcgis/qmldir
+#)
+
+
+FILE(GLOB QML_FILES "cn/pcgis/*.qml")
+ADD_CUSTOM_TARGET(qml
+    SOURCES ${QML_FILES} cn/pcgis/qmldir
 )
 
 
-FILE(GLOB QML_FILES "qml/*.qml")
-ADD_CUSTOM_TARGET(qml SOURCES ${QML_FILES})
+
+add_custom_command(
+    OUTPUT qml.output
+    COMMAND echo "hello pre buid"
+#    COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND mkdir -p ${PROJECT_BINARY_DIR}/cn/pcgis
+#    COMMAND cp -f ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -rf ${PROJECT_SOURCE_DIR}/cn/pcgis/* ${PROJECT_BINARY_DIR}/cn/pcgis/
+)
 
 
 add_library(${PROJECT_NAME}
     SHARED
-    ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_OTHERS}
+    ${PROJECT_SOURCES} ${PROJECT_HEADERS}
+    qml.output
 )
 
-
+#add_dependencies(${PROJECT_NAME} qml)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
@@ -53,13 +70,25 @@ target_link_libraries(${PROJECT_NAME}
 
 
 
+
+
 add_custom_command(
     TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND echo "hello post buid"
+#    COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
     COMMAND mkdir -p ${PROJECT_BINARY_DIR}/cn/pcgis
     COMMAND cp -f ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
-    COMMAND cp -f ${PROJECT_SOURCE_DIR}/qmldir ${PROJECT_BINARY_DIR}/cn/pcgis/
-    COMMAND cp -f ${PROJECT_SOURCE_DIR}/qml/*.qml ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -rf ${PROJECT_SOURCE_DIR}/cn/pcgis/* ${PROJECT_BINARY_DIR}/cn/pcgis/
 )
 
+
+
+add_custom_command(
+    TARGET qml
+    POST_BUILD
+#    COMMAND rm -rf ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND mkdir -p ${PROJECT_BINARY_DIR}/cn/pcgis
+    COMMAND cp -f ${PROJECT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/cn/pcgis/
+    COMMAND cp -rf ${PROJECT_SOURCE_DIR}/cn/pcgis/* ${PROJECT_BINARY_DIR}/cn/pcgis/
+)

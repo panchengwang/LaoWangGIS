@@ -1,0 +1,17 @@
+module cn.pcgis
+plugin laowangqml
+
+singleton LWStyle 1.0 LWStyle.qml
+singleton LWIconSet 1.0 LWIconSet.qml
+
+LWApplicationWindow 1.0 LWApplicationWindow.qml
+
+LWLabel 1.0 LWLabel.qml
+LWTextField 1.0 LWTextField.qml
+LWButton 1.0 LWButton.qml
+LWHeader 1.0 LWHeader.qml
+LWMapDesktop 1.0 LWMapDesktop.qml
+
+LWWindowHeader 1.0 LWWindowHeader.qml
+LWDialog 1.0 LWDialog.qml
+LWSQLConnectionDialog 1.0 LWSQLConnectionDialog.qml
