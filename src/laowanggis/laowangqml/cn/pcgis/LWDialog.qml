@@ -5,11 +5,17 @@ import QtQuick.Layouts 1.15
 Window {
     id: dialog
     default property alias form: container.children
-    title: "数据库连接"
-    width: 400
-    height: 300
 
-    flags: Qt.Dialog
+    width: 600
+    height: 400
+
+    signal accepted()
+    signal rejected()
+
+    title: "Database Connection Information"
+
+
+    flags: Qt.Window
 
     ColumnLayout{
         anchors.fill: parent
@@ -18,9 +24,24 @@ Window {
             Layout.fillWidth: true
             Layout.fillHeight: true
         }
-        LWHeader{
+        LWOKCancelButton{
             Layout.fillWidth: true
+            onAccepted: {
+                dialog.accepted()
+            }
+            onRejected: {
+                dialog.rejected()
+            }
         }
+    }
+
+    function centerInParent(){
+        x = (screen.width-width) * 0.5
+        y = (screen.height-height)*0.5
+    }
+
+    Component.onCompleted: {
+        centerInParent()
     }
 }
 

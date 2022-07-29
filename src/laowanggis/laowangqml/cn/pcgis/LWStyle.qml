@@ -22,7 +22,7 @@ QtObject {
     property int spacing: 5
 
     //font
-    property int font_point_size: 16
+    property int font_point_size: 12
 
     // button
     property string button_text_color: LWStyle.white
@@ -34,7 +34,7 @@ QtObject {
     // header
     property int header_height: 40
     property string header_color: LWStyle.primary
-    property int header_caption_point_size: 20
+    property int header_caption_point_size: LWStyle.font_point_size + 2
     property string header_caption_color: LWStyle.white
 
     // window header

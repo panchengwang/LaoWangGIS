@@ -9,6 +9,7 @@ LWApplicationWindow 1.0 LWApplicationWindow.qml
 LWLabel 1.0 LWLabel.qml
 LWTextField 1.0 LWTextField.qml
 LWButton 1.0 LWButton.qml
+LWOKCancelButton 1.0 LWOKCancelButton.qml
 LWHeader 1.0 LWHeader.qml
 LWMapDesktop 1.0 LWMapDesktop.qml
 

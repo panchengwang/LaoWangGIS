@@ -13,10 +13,9 @@ import QtQuick.Controls 2.15
 TextField {
     id: input
     //        anchors.margins: 3
-    anchors.fill: parent
     text:""
     color: LWStyle.dark
-    verticalAlignment: Text.AlignVCenter
+//    verticalAlignment: Text.AlignVCenter
     font.pointSize: LWStyle.input_font_point_size
     selectByMouse: true
     background: Rectangle{

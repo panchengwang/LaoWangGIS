@@ -40,4 +40,5 @@ QtObject {
     property string icon_material_outlined_shopping_cart: "materialoutlined_\ue8cc"
     property string icon_material_outlined_logout: "materialoutlined_\ue9ba"
     property string icon_material_outlined_apps: "materialoutlined_\ue5c3"
+    property string icon_material_outlined_close: "materialoutlined_\ue5cd"
 }

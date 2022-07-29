@@ -49,6 +49,7 @@ Rectangle {
             font.pointSize: LWStyle.button_icon_point_fize
             Layout.leftMargin: LWStyle.button_margins
             Layout.fillHeight: true
+            verticalAlignment: Text.AlignVCenter
         }
         Text{
             id: text
@@ -57,6 +58,7 @@ Rectangle {
             Layout.rightMargin: LWStyle.button_margins
             Layout.fillHeight: true
             text: label
+            verticalAlignment: Text.AlignVCenter
         }
     }
 

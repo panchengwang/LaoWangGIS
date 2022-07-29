@@ -10,7 +10,7 @@ ApplicationWindow {
     height: 1080
 
     visible: true
-    title: qsTr("Welcome to use LaoWang GIS! QQ: 593723812")
+    title: qsTr("Welcome to LaoWang GIS ! QQ: 593723812")
     color: "lightgray"
 
     Component.onCompleted: {
