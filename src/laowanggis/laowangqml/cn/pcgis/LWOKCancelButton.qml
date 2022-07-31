@@ -15,11 +15,13 @@ Rectangle {
         anchors.fill: parent
         spacing: LWStyle.spacing
         anchors.margins: LWStyle.margin
+
         Item{
             Layout.fillWidth: true
         }
 
         LWButton{
+            id: btnCancel
             Layout.fillHeight: true
             icon: LWIconSet.icon_material_outlined_close
             label: "Cancel"
@@ -30,11 +32,12 @@ Rectangle {
         }
 
         LWButton{
+            id: btnOk
             Layout.fillHeight: true
             icon: LWIconSet.icon_material_outlined_done
             label: 'Ok'
             radius: 0
-
+            implicitWidth: btnCancel.width
             onClicked: {
                 control.accepted()
             }

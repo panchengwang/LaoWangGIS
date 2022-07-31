@@ -6,6 +6,7 @@ QtObject {
 
     // colors
     property string white     : "white"
+    property string gray      : "#888888"
     property string primary   : "#1976d2"
     property string secondary : "#26A69A"
     property string accent    : "#9C27B0"
@@ -17,9 +18,9 @@ QtObject {
     property string warning   : "#F2C037"
 
     property int radius: 3
-    property int padding: 5
-    property int margin: 5
-    property int spacing: 5
+    property int padding: 3
+    property int margin: 3
+    property int spacing: 3
 
     //font
     property int font_point_size: 12
@@ -32,7 +33,7 @@ QtObject {
     property int button_margins: LWStyle.radius
 
     // header
-    property int header_height: 40
+    property int header_height: 32
     property string header_color: LWStyle.primary
     property int header_caption_point_size: LWStyle.font_point_size + 2
     property string header_caption_color: LWStyle.white
@@ -46,7 +47,7 @@ QtObject {
     property string label_color: LWStyle.dark
 
     // input
-    property int input_height: 32
+    property int input_height: 24
     property int input_font_point_size: LWStyle.font_point_size
     property int input_radius: LWStyle.radius
 }

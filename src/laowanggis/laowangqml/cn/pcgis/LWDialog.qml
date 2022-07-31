@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 Window {
     id: dialog
-    default property alias form: container.children
+    property alias form: container.children
 
     width: 600
     height: 400
@@ -19,6 +19,13 @@ Window {
 
     ColumnLayout{
         anchors.fill: parent
+
+        LWHeader{
+            leftButtonVisible: false
+            Layout.fillWidth: true
+            caption: dialog.title
+        }
+
         Rectangle{
             id: container
             Layout.fillWidth: true
@@ -27,10 +34,15 @@ Window {
         LWOKCancelButton{
             Layout.fillWidth: true
             onAccepted: {
-                dialog.accepted()
+                if(beforeAccepted()){
+                    dialog.accepted()
+                    dialog.visible = false
+                }
+
             }
             onRejected: {
                 dialog.rejected()
+                dialog.visible = false
             }
         }
     }
@@ -38,6 +50,10 @@ Window {
     function centerInParent(){
         x = (screen.width-width) * 0.5
         y = (screen.height-height)*0.5
+    }
+
+    function beforeAccepted(){
+        return true
     }
 
     Component.onCompleted: {

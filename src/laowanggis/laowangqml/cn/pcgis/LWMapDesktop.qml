@@ -6,11 +6,11 @@ LWApplicationWindow {
     property var configuration: ({})
 
     header: LWHeader{
-        caption: "欢迎使用麓山老将为您倾情提供的GIS工具"
+        caption: "LaowangGIS: A gis toolbox provided by a senior programmer"
         rightIcon: LWIconSet.icon_material_outlined_settings
         leftButtonVisible: false
         onRightClicked: {
-            connectionDlg.visible = true
+//            connectionDlg.visible = true
         }
     }
 
@@ -21,14 +21,27 @@ LWApplicationWindow {
         backgroundColor: "transparent"
         focus: true
         configuration: desktop.configuration
+
     }
 
 
-    LWSQLConnectionDialog{
-        id: connectionDlg
-        modality: Qt.ApplicationModal
+    //    LWSQLConnectionDialog{
+    //        id: connectionDlg
+    //        modality: Qt.ApplicationModal
+    //        visible: true
+    //        onAccepted: {
+    //            console.log(JSON.stringify(connection))
+    //        }
+    //    }
+
+    LWSQLConnection{
+        connectParameters: ({
+                                'host':'127.0.0.1',
+                                'port':'5432',
+                                'dbname':'laowangdb',
+                                'user':'pcwang',
+                                'password':'123456'
+                            })
     }
-
-
 
 }

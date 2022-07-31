@@ -14,20 +14,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBPQ REQUIRED  IMPORTED_TARGET libpq)
 
-
+message(${LIBPQ_LIBRARIES})
+message(${LIBPQ_INCLUDE_DIRS})
 
 set(PROJECT_SOURCES
     src/laowangqml_plugin.cpp
     src/LWMapControl.cpp
     src/LWFile.cpp
+    src/LWSQLConnection.cpp
 )
 
 set(PROJECT_HEADERS
     src/laowangqml_plugin.h
     src/LWMapControl.h
     src/LWFile.h
+    src/LWSQLConnection.h
 )
+
 
 
 #set(PROJECT_OTHERS
@@ -58,7 +64,20 @@ add_library(${PROJECT_NAME}
     qml.output
 )
 
+#include_directories(${PROJECT_NAME}
+#        ${LIBPQ_INCLUDE_DIRS}
+#)
+
 #add_dependencies(${PROJECT_NAME} qml)
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${LIBPQ_INCLUDE_DIRS}
+)
+
+target_link_directories(${PROJECT_NAME}
+    PRIVATE
+        ${LIBPQ_LIBRARY_DIRS}
+)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
@@ -66,7 +85,10 @@ target_link_libraries(${PROJECT_NAME}
         Qt${QT_VERSION_MAJOR}::Quick
         Qt${QT_VERSION_MAJOR}::QuickControls2
         Qt${QT_VERSION_MAJOR}::Qml
+        ${LIBPQ_LIBRARIES}
 )
+
+
 
 
 
