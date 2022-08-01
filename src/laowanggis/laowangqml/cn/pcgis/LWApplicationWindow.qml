@@ -6,8 +6,8 @@ import cn.pcgis 1.0
 ApplicationWindow {
 
 
-    width: 1440
-    height: 1080
+    width: 720
+    height: 540
 
     visible: true
     title: qsTr("Welcome to LaoWang GIS ! QQ: 593723812")

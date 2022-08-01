@@ -10,31 +10,39 @@ LWApplicationWindow {
         rightIcon: LWIconSet.icon_material_outlined_settings
         leftButtonVisible: false
         onRightClicked: {
-//            connectionDlg.visible = true
+            //            connectionDlg.visible = true
+            var result = sqlConn.executeQuery("select * from county")
+            tableview.data = result;
+
         }
     }
 
 
 
-    LWMapControl{
-        anchors.fill: parent
-        backgroundColor: "transparent"
-        focus: true
-        configuration: desktop.configuration
+//    LWMapControl{
+//        anchors.fill: parent
+//        backgroundColor: "transparent"
+//        focus: true
+//        configuration: desktop.configuration
 
+//    }
+
+    LWTableViewSQLQuery{
+        id: tableview
+        anchors.fill: parent
     }
 
-
-    //    LWSQLConnectionDialog{
-    //        id: connectionDlg
-    //        modality: Qt.ApplicationModal
-    //        visible: true
-    //        onAccepted: {
-    //            console.log(JSON.stringify(connection))
-    //        }
-    //    }
+//    LWDialogSQLConnection{
+//        id: connectionDlg
+//        modality: Qt.ApplicationModal
+//        visible: true
+//        onAccepted: {
+//            console.log(JSON.stringify(connection))
+//        }
+//    }
 
     LWSQLConnection{
+        id: sqlConn
         connectParameters: ({
                                 'host':'127.0.0.1',
                                 'port':'5432',
@@ -42,6 +50,13 @@ LWApplicationWindow {
                                 'user':'pcwang',
                                 'password':'123456'
                             })
+        onError: {
+            console.log("error: " , errorMessage)
+        }
+        Component.onCompleted: {
+
+        }
     }
+
 
 }

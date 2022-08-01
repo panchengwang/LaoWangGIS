@@ -20,18 +20,14 @@ pkg_check_modules(LIBPQ REQUIRED  IMPORTED_TARGET libpq)
 message(${LIBPQ_LIBRARIES})
 message(${LIBPQ_INCLUDE_DIRS})
 
+FILE(GLOB SOURCES_FILES "src/*.cpp")
 set(PROJECT_SOURCES
-    src/laowangqml_plugin.cpp
-    src/LWMapControl.cpp
-    src/LWFile.cpp
-    src/LWSQLConnection.cpp
+    ${SOURCES_FILES}
 )
 
+FILE(GLOB HEADER_FILES "src/*.h")
 set(PROJECT_HEADERS
-    src/laowangqml_plugin.h
-    src/LWMapControl.h
-    src/LWFile.h
-    src/LWSQLConnection.h
+    ${HEADER_FILES}
 )
 
 

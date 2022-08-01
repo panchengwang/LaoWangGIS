@@ -17,7 +17,8 @@ public:
     LWSQLConnection(QObject *parent = nullptr);
     ~LWSQLConnection();
 
-    Q_INVOKABLE QJsonObject execute(const QString& sql);
+
+    Q_INVOKABLE QJsonObject executeQuery(const QString& sql);
 
     Q_INVOKABLE QJsonObject connectParameters() const;
     Q_INVOKABLE void setConnectParameters(const QJsonObject& connectParameters);

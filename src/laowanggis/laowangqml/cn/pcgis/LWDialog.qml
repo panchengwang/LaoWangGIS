@@ -31,7 +31,7 @@ Window {
             Layout.fillWidth: true
             Layout.fillHeight: true
         }
-        LWOKCancelButton{
+        LWButtonOKCancel{
             Layout.fillWidth: true
             onAccepted: {
                 if(beforeAccepted()){

@@ -1,5 +1,18 @@
 #include "LWSQLConnection.h"
 
+
+#define PQ_CLEAR(result)        \
+    if(result){                 \
+        PQclear(result);        \
+        result = NULL;          \
+    }
+
+#define PQ_FINISH(conn)         \
+    if(conn){                   \
+        PQfinish(conn);         \
+        conn = NULL;            \
+    }
+
 LWSQLConnection::LWSQLConnection(QObject *parent)
     :QObject(parent)
 {
@@ -12,10 +25,52 @@ LWSQLConnection::~LWSQLConnection()
 }
 
 
-QJsonObject LWSQLConnection::execute(const QString& sql)
+QJsonObject LWSQLConnection::executeQuery(const QString& sql)
 {
-    QJsonObject obj;
 
+    QJsonObject obj;
+    if(!open()){
+        return obj;
+    }
+
+    _result = PQexec(_connection,sql.toStdString().c_str());
+    if(PQresultStatus(_result) != PGRES_TUPLES_OK ){
+        _errorMessage = PQerrorMessage(_connection);
+        PQ_CLEAR(_result);
+        close();
+        return obj;
+    }
+
+    //Get meta data of the result
+    QJsonArray fields;
+    for(int i=0; i< PQnfields(_result); i++ ){
+        QJsonObject field;
+
+        field.insert("name",PQfname(_result,i));
+
+        QString mysql = QString("select typname from pg_type where oid=%1").arg(PQftype(_result,i));
+        PGresult *myresult = PQexec(_connection,mysql.toStdString().c_str());
+        field.insert("type",PQgetvalue(myresult,0,0));
+        PQ_CLEAR(myresult);
+
+        field.insert("size", PQfsize(_result,i));
+        field.insert("modifier", PQfmod(_result,i));
+        fields.append(field);
+    }
+    obj.insert("fields",fields);
+
+    QJsonArray data;
+    for(int i=0; i<PQntuples(_result); i++){
+        QJsonObject d;
+        for(int j=0; j<PQnfields(_result); j++){
+            d.insert(PQfname(_result,j),PQgetvalue(_result,i,j));
+        }
+        data.append(d);
+    }
+
+    obj.insert("rows",data);
+
+    close();
     return obj;
 }
 
@@ -53,14 +108,8 @@ bool LWSQLConnection::open(){
 
 
 void LWSQLConnection::close(){
-    if(_result){
-        PQclear(_result);
-        _result = NULL;
-    }
-    if(_connection){
-        PQfinish(_connection);
-        _connection = NULL;
-    }
+    PQ_CLEAR(_result);
+    PQ_FINISH(_connection);
 }
 
 

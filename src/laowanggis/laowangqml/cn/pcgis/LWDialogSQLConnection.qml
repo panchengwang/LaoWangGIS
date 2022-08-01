@@ -88,9 +88,8 @@ LWDialog{
 
     LWSQLConnection{
         id: sqlConnect
-        connectParameters:({})
         onError:{
-            console.log(errorMessage)
+            console.log("error: " , errorMessage)
         }
     }
 
